@@ -4,7 +4,7 @@
   },
   "scripts": {
     "start": "node --max-old-space-size=500 index.js"
-  }
+  },
   "dependencies": {
     "@telegraf/session": "^1.0.1",
     "debug": "^4.3.4",
