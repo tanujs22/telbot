@@ -346,6 +346,7 @@ function start() {
 🥷<a href="https://bscscan.com/address/${ownersAddress}">Dev wallet</a>
 💵<b>Mcap</b>: ${formatter.format(currentMarketcap)}
 💳<b>15 min price change</b>: ${fifteenMinuteChange}
+<b>Chain - BSC</b>
 📈<a href="https://poocoin.app/tokens/${addressFromUser}">Chart</a>
 <pre>—————————————————————</pre>
                  
@@ -361,6 +362,7 @@ function start() {
 🥷<a href="https://etherscan.io/address/${ownersAddress}">Dev wallet</a>
 💵<b>Mcap</b>: ${formatter.format(currentMarketcap)}
 💳<b>15 min price change</b>: ${fifteenMinuteChange}
+<b>Chain - ETH</b>
 <a href="https://www.dextools.io/app/ether/pair-explorer/${ethPair}">📈Chart</a>
 <pre>—————————————————————</pre>
                               
