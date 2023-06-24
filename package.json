@@ -6,8 +6,11 @@
     "start": "node --max-old-space-size=500 index.js"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "@telegraf/session": "^1.0.1",
     "debug": "^4.3.4",
+    "g": "^2.0.1",
+    "nodemon": "^2.0.22",
     "request": "^2.88.2",
     "telegraf": "^4.8.5",
     "telegraf-ignore-old-messages": "^1.0.3",

@@ -1,18 +1,10 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-redeclare */
-/* eslint-disable vars-on-top */
-/* eslint-disable no-var */
-/* eslint-disable block-scoped-var */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable max-len */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable global-require */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-undef */
 const config = require("./config.js");
-let ad = '';
+
 const footer = config.footer;
+const adText = config.adText;
+const adUrl = config.adUrl;
+const ownerText = config.ownerText;
+const ownerUrl = config.ownerUrl;
 const emptyChar = '‎';
 const wEth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -24,6 +16,7 @@ const utilities = require('./utilities');
 const tokenPriceService = require('./tokenPriceService');
 const cacheManager = require('./cacheManager');
 const whitelistService = require('./whitelistService');
+const { formatMessage, getChartScreenshot } = require('./message');
 
 const scansGroupId = -1001501982568;
 
@@ -108,18 +101,16 @@ function start() {
     }
   });
 
-  // bot.command('test', (ctx) => ctx.replyWithHTML('<b>HI</b> ', Markup.inlineKeyboard([Markup.button.url('Covid-19 🇮🇳 IN', 'https://www.covid19india.org/')])));
-  // bot.command('test', (ctx) => bot.telegram.sendMessage(ctx.chat.id, 'HELLO', { reply_to_message_id: ctx.message.message_id }));
-  // bot.on('channel_post', (ctx) => {
-  //   console.log(ctx);
-  // });
+
 
   bot.on('message', async (ctx) => {
     if (ctx.message.text) {
       const chatType = ctx.message.chat.type;
       if (chatType === 'private') {
+        console.log(ctx.message)
         console.log(
           `${ctx.message.from.first_name} ${ctx.message.from.last_name} (${ctx.message.from.username}) said: ${ctx.message.text}`
+          
         );
       }
 
@@ -133,16 +124,18 @@ function start() {
         message[0].length === 42
       ) {
         let whitelisted = false;
+        var IsUserInMyGroup = false;
+
         const checkIfUserIsInMyGroup = await bot.telegram.getChatMember(
+          // -1001968057846,
           scansGroupId,
           ctx.message.from.id
         );
 
-        var IsUserInMyGroup = false;
-
         if (checkIfUserIsInMyGroup.status === 'member') {
           IsUserInMyGroup = true;
         }
+
         if (chatType === 'private') {
           whitelisted = whitelistService.isUserWhitelisted(ctx.message.from.id);
           console.log(
@@ -233,17 +226,10 @@ function start() {
                 addressFromUser
               ).developerWallet;
             if (chain === 'bsc') {
-              var tokenSentInfo = `<i><b>${name} (${symbol})</b></i>
+                console.log('reached 1')
+               var tokenSentInfo = await formatMessage(name, symbol, addressFromUser, ownersAddress, formatter.format(currentMarketcap), fifteenMinuteChange, chain)
+            //    const screenshot = await getChartScreenshot(chain, addressFromUser);
 
-📃<b><i>Contract</i></b>: <code>${addressFromUser}</code>
-<a href="https://bscscan.com/address/${ownersAddress}">🥷 Dev wallet</a>
-💵 <b>Mcap</b>: ${formatter.format(currentMarketcap)}
-💳<b>15 min price change</b>: ${fifteenMinuteChange}
-<b>Chain - BSC</b>
-📈 <a href="https://poocoin.app/tokens/${addressFromUser}">Chart</a>
-<pre>—————————————————————</pre>
-                
-`;
             } else {
               let ethPair = await utilities.getEthPairAddress(
                 addressFromUser,
@@ -257,34 +243,54 @@ function start() {
                 );
               }
 
-              var tokenSentInfo = `<i><b>${name} (${symbol})</b></i>
+              var tokenSentInfo = await formatMessage(name, symbol, addressFromUser, ownersAddress, formatter.format(currentMarketcap), fifteenMinuteChange, chain, ethPair)
+              console.log('reached 2')
+//                             `<i><b>${name} (${symbol})</b></i>
 
-📃 <i>Contract</i>: <code>${addressFromUser}</code>
-<a href="https://etherscan.io/address/${ownersAddress}">Dev wallet</a>
-💵 <b>Mcap</b>: ${formatter.format(currentMarketcap)}
-💳<b>15 min price change</b>: ${fifteenMinuteChange}
-<b>Chain - ETH</b>
-📈 <a href="https://www.dextools.io/app/ether/pair-explorer/${ethPair}">Chart</a>
-<pre>—————————————————————</pre>
+// 📃 <i>Contract</i>: <code>${addressFromUser}</code>
+// <a href="https://etherscan.io/address/${ownersAddress}">Dev wallet</a>
+// 💵 <b>Mcap</b>: ${formatter.format(currentMarketcap)}
+// 💳<b>15 min price change</b>: ${fifteenMinuteChange}
+// <b>Chain - ETH</b>
+// 📈 <a href="https://www.dextools.io/app/ether/pair-explorer/${ethPair}">Chart</a>
+// <pre>—————————————————————</pre>
                             
-`;
+// `;
             }
 
             console.log(`Using cached response for ${addressFromUser}`);
             console.log(`Returning cached response for ${addressFromUser}`);
+            // ctx.replyWithPhoto({ source: screenshot }, { caption: tokenSentInfo });
+
             return ctx.replyWithHTML(
-              `${tokenSentInfo}${
-                cacheManager.getCachedResponseForContract(addressFromUser)
-                  .response
-              }\n${footer}`,
-              {
-                disable_web_page_preview: true,
-                reply_to_message_id: ctx.message.message_id,
-              }
-            );
+                `${tokenSentInfo}${
+                  cacheManager.getCachedResponseForContract(addressFromUser)
+                    .response
+                }\n${footer}`,
+                {
+                  disable_web_page_preview: true,
+                  reply_to_message_id: ctx.message.message_id,
+                  reply_markup: {
+                    inline_keyboard: [
+                      [
+                        {
+                          text: adText,
+                          url: adUrl
+                        }
+                      ],
+                      [
+                        {
+                          text: ownerText,
+                          url: ownerUrl
+                        }
+                      ]
+                    ]
+                  }
+                }
+              );
           }
 
-          console.log('Setting running status to true... WAS: ', running);
+          console.log('Setting running status to true.... WAS: ', running);
           running = true;
           try {
             var isToken = await utilities.isErcToken(addressFromUser, chain);
@@ -340,33 +346,38 @@ function start() {
               // if we cant find the creation tx , access .from from null will throw an error.
               var ownersAddress = creationTransaction.from;
               if (chain === 'bsc') {
-                var tokenSentInfo = `<i><b>${name} (${symbol})</b></i>
+                console.log('reached')
+                var tokenSentInfo = await formatMessage(name, symbol, addressFromUser, ownersAddress, formatter.format(currentMarketcap), fifteenMinuteChange, chain)
+                console.log('reached 3')
+                //                 `<i><b>${name} (${symbol})</b></i>
 
-📃<b><i>Contract</i></b>: <code>${addressFromUser}</code>
-🥷<a href="https://bscscan.com/address/${ownersAddress}">Dev wallet</a>
-💵<b>Mcap</b>: ${formatter.format(currentMarketcap)}
-💳<b>15 min price change</b>: ${fifteenMinuteChange}
-<b>Chain - BSC</b>
-📈<a href="https://poocoin.app/tokens/${addressFromUser}">Chart</a>
-<pre>—————————————————————</pre>
+// 📃<b><i>Contract</i></b>: <code>${addressFromUser}</code>
+// 🥷<a href="https://bscscan.com/address/${ownersAddress}">Dev wallet</a>
+// 💵<b>Mcap</b>: ${formatter.format(currentMarketcap)}
+// 💳<b>15 min price change</b>: ${fifteenMinuteChange}
+// <b>Chain - BSC</b>
+// 📈<a href="https://poocoin.app/tokens/${addressFromUser}">Chart</a>
+// <pre>—————————————————————</pre>
                  
-`;
+// `;
               } else {
                 var ethPair = await utilities.getEthPairAddress(
                   addressFromUser,
                   wEth
                 );
-                var tokenSentInfo = `<i><b>${name} (${symbol})</b></i>
+                var tokenSentInfo = await formatMessage(name, symbol, addressFromUser, ownersAddress, formatter.format(currentMarketcap), fifteenMinuteChange, chain, ethPair)
+                console.log('reached 4')
+                //                 `<i><b>${name} (${symbol})</b></i>
 
-📃<i>Contract</i>: <code>${addressFromUser}</code>
-🥷<a href="https://etherscan.io/address/${ownersAddress}">Dev wallet</a>
-💵<b>Mcap</b>: ${formatter.format(currentMarketcap)}
-💳<b>15 min price change</b>: ${fifteenMinuteChange}
-<b>Chain - ETH</b>
-<a href="https://www.dextools.io/app/ether/pair-explorer/${ethPair}">📈Chart</a>
-<pre>—————————————————————</pre>
+// 📃<i>Contract</i>: <code>${addressFromUser}</code>
+// 🥷<a href="https://etherscan.io/address/${ownersAddress}">Dev wallet</a>
+// 💵<b>Mcap</b>: ${formatter.format(currentMarketcap)}
+// 💳<b>15 min price change</b>: ${fifteenMinuteChange}
+// <b>Chain - ETH</b>
+// <a href="https://www.dextools.io/app/ether/pair-explorer/${ethPair}">📈Chart</a>
+// <pre>—————————————————————</pre>
                               
-`;
+// `;
               }
             } catch (err) {
               console.log('Setting running status to FALSE... WAS: ', running);
@@ -440,6 +451,22 @@ function start() {
                 {
                   disable_web_page_preview: true,
                   reply_to_message_id: ctx.message.message_id,
+                  reply_markup: {
+                    inline_keyboard: [
+                      [
+                        {
+                          text: adText,
+                          url: adUrl
+                        }
+                      ],
+                      [
+                        {
+                          text: ownerText,
+                          url: ownerUrl
+                        }
+                      ]
+                    ]
+                  }
                 }
               );
             }
@@ -518,10 +545,27 @@ function start() {
               uniqueContractsScanned.push(bestStat.tokenAddress.toLowerCase());
             }
 
-            return ctx.replyWithHTML(tokenSentInfo + response + footer, {
+            return ctx.replyWithHTML(tokenSentInfo + response + footer,             {
               disable_web_page_preview: true,
               reply_to_message_id: ctx.message.message_id,
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: adText,
+                      url: adUrl
+                    }
+                  ],
+                  [
+                    {
+                      text: ownerText,
+                      url: ownerUrl
+                    }
+                  ]
+                ]
+              }
             });
+
           }
           // supplied address isnt a token, we couldnt get decimals for it.
           running = false;
