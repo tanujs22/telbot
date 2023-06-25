@@ -18,7 +18,8 @@ const cacheManager = require('./cacheManager');
 const whitelistService = require('./whitelistService');
 const { formatMessage, getChartScreenshot } = require('./message');
 
-const scansGroupId = -1001501982568;
+const scansGroupId = -1001501982568; //prod
+// const scansGroupId = -1001925670984; //dev 
 
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -436,13 +437,29 @@ function start() {
               ) {
                 bot.telegram.sendMessage(
                   scansGroupId,
-                  `${
-                    chatType !== 'private'
-                      ? `<pre>Group: ${ctx.message.chat.title}</pre>
+                  `${chatType !== 'private'
+                    ? `<pre>Group: ${ctx.message.chat.title}</pre>
                 `
-                      : ''
+                    : ''
                   }${tokenSentInfo}No previous deployments found. \n${footer}`,
-                  { parse_mode: 'HTML', disable_web_page_preview: true }
+                  {
+                    parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: {
+                      inline_keyboard: [
+                        [
+                          {
+                            text: adText,
+                            url: adUrl
+                          }
+                        ],
+                        [
+                          {
+                            text: ownerText,
+                            url: ownerUrl
+                          }
+                        ]
+                      ]
+                    }
+                  }
                 );
                 uniqueContractsScanned.push(addressFromUser.toLowerCase());
               }
@@ -534,13 +551,29 @@ function start() {
             ) {
               bot.telegram.sendMessage(
                 scansGroupId,
-                `${
-                  chatType !== 'private'
-                    ? `<pre>Group: ${ctx.message.chat.title}</pre>
+                `${chatType !== 'private'
+                  ? `<pre>Group: ${ctx.message.chat.title}</pre>
               `
-                    : ''
+                  : ''
                 }${tokenSentInfo}${response}${footer}`,
-                { parse_mode: 'HTML', disable_web_page_preview: true }
+                {
+                  parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: {
+                    inline_keyboard: [
+                      [
+                        {
+                          text: adText,
+                          url: adUrl
+                        }
+                      ],
+                      [
+                        {
+                          text: ownerText,
+                          url: ownerUrl
+                        }
+                      ]
+                    ]
+                  }
+                }
               );
               uniqueContractsScanned.push(bestStat.tokenAddress.toLowerCase());
             }

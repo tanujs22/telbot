@@ -2,6 +2,16 @@ const fs = require('fs');
 const cacheDebugger = require('debug')('cacheManager');
 
 function doesCachedResponseExist(tokenAddress) {
+  const path = './cached-contracts/';
+
+  fs.access(path, fs.constants.F_OK, (err) => {
+    // If the directory doesn't exist, create it.
+    if (err) {
+      fs.mkdir(path, { recursive: true }, (err) => {
+        if (err) throw err;
+      });
+    }
+  });
   const filePath = `./cached-contracts/${tokenAddress}.json`;
   const doesFileExist = fs.existsSync(filePath);
   return doesFileExist;
