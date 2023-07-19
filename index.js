@@ -18,7 +18,7 @@ const cacheManager = require('./cacheManager');
 const whitelistService = require('./whitelistService');
 const { formatMessage, getChartScreenshot } = require('./message');
 
-const scansGroupId = -1001501982568; //prod
+const scansGroupId = config.scansGroupId; //prod
 // const scansGroupId = -1001925670984; //dev 
 
 const formatter = new Intl.NumberFormat('en-US', {
