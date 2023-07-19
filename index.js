@@ -18,8 +18,7 @@ const cacheManager = require('./cacheManager');
 const whitelistService = require('./whitelistService');
 const { formatMessage, getChartScreenshot } = require('./message');
 
-const scansGroupId = -1001501982568; //prod
-// const scansGroupId = -1001925670984; //dev 
+const scansGroupId = config.scansGroupId;
 
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -438,7 +437,7 @@ function start() {
                 bot.telegram.sendMessage(
                   scansGroupId,
                   `${chatType !== 'private'
-                    ? `<pre>Group: ${ctx.message.chat.title}</pre>
+                    ? `Group: <a href="https://t.me/${ctx.message.chat.username}">${ctx.message.chat.title}</a>
                 `
                     : ''
                   }${tokenSentInfo}No previous deployments found. \n${footer}`,
@@ -552,7 +551,7 @@ function start() {
               bot.telegram.sendMessage(
                 scansGroupId,
                 `${chatType !== 'private'
-                  ? `<pre>Group: ${ctx.message.chat.title}</pre>
+                  ? `Group: <a href="https://t.me/${ctx.message.chat.username}">${ctx.message.chat.title}</a>
               `
                   : ''
                 }${tokenSentInfo}${response}${footer}`,
