@@ -11,8 +11,8 @@ module.exports = {
   etherscanApiKey: `QQKQGZR6HUPUXGK5WVYVKPT5TWWTASXFMY`,
   moralisApiKey: `LQ0tE6hKrPUaA35j0o0b9iz3O3I5EhFrWmYp4oAdx5Imm9SkIkcH0ryKWxbVhgce`,
   bitqueryApiKey: `BQYVtVK4j1WSBHaJlGmhdJaCza5VqDce`,
-  adText: "🚀 Presale of PastCoinBot is Live 🚀",
-  adUrl: "https://t.me/+BrEkgb29x7UxNDNl",
+  adText: "🚀 Sol Token Presale 🚀",
+  adUrl: "https://t.me/+Rebnt0xO7MI1OTY1",
   ownerText: "🔥 For Marketing Query 🔥",
   ownerUrl: "https://t.me/cryptovyom"
 }
